@@ -11,6 +11,7 @@ import html
 import re
 import shutil
 from pathlib import Path
+from urllib.parse import urljoin, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT
@@ -27,20 +28,20 @@ SKILLS = (
 )
 # 2026/10/15 整併：哪些技能是新增、哪些是把新規則併入既有技能。
 STATUS = {
-    "stock-site-design": ("併入", "補 10/03–10/15 版面裁示、只改被要求的部分、按鈕互動與群組自播"),
-    "stock-content-audit": ("併入", "補 10/05–10/15 分類裁示與逐字稿聽錯樣態；寫法移到文字技能"),
-    "stock-public-writing": ("新增", "所有公開文字的通道、結構、禁用寫法與回測"),
-    "stock-rule-tuning": ("新增", "判錯成因、通用規則、保留日回測、變異與用量"),
+    "stock-site-design": ("併入", "補共用寬版、自製可及控制項、數據閱讀層次與動畫分工"),
+    "stock-content-audit": ("併入", "區分 accepted 驗收、部位事實與獨立評估，支援歷史樣本擴充"),
+    "stock-public-writing": ("併入", "改為 AI 批次語意審閱，錯例作 rubric，保留證據與通道核對"),
+    "stock-rule-tuning": ("併入", "補技能路由、離線 A/B、歷史樣本擴充、AI 裁判與答案污染檢查"),
     "stock-market-data": ("併入", "補逐次行情與持股裁示、證交所／櫃買來源實務"),
     "stock-automation-triage": ("併入", "補 10/05–10/15 事故表與沒有 gh CLI 時的 Actions 操作"),
-    "stock-release-check": ("併入", "補 clasp 步驟、編輯器檔名、擁有者移 /exec、修補陷阱"),
+    "stock-release-check": ("併入", "補品質提升的證據門檻，區分已安裝、已評估與已發布"),
     "stock-assistant": ("新增", "只用 Flash Lite、只訂閱每日總覽、唯讀查詢與三條硬限制"),
-    "stock-collaboration": ("新增", "常用語句辭典、授權帳本、交接 prompt 與結案格式"),
+    "stock-collaboration": ("新增", "反覆註解引導、當日優先、判斷差異與授權交接"),
 }
 # 一天的資料從訊息到正式站經過的站點：(站名, 技能 key, 做什麼, 關卡, 常犯錯誤, 完成證據)
 STAGES = (
     ("拆句與授權", "collab", "把管理者的一則訊息拆成逐項待辦，對照哪些動作已授權、哪些是擁有者步驟。",
-     "不可逆的動作（apply、刪列、寄送、加別名、移 /exec）要被點名", "把貼上紀錄寫的「已完成」當成事實", "拆句清單、結案報告"),
+     "核對已有授權與變更範圍；對外寄送另需授權", "把貼上紀錄寫的「已完成」當成事實", "拆句清單、結案報告"),
     ("取稿與原稿", "automation", "偵測影片、轉錄、保存原稿與指紋，失敗時保留已完成片段續跑。",
      "原稿 SHA-256 不變；直播中延後，不當失敗", "400 重複認證時換三把金鑰空等", "原稿字數、指紋、片段與 run"),
     ("校字與股名", "content", "核對名稱、代號與聽錯的字；不確定的字合併一批請模型修。",
@@ -49,11 +50,11 @@ STAGES = (
      "引句在可引用範圍；跨公開或持股要三票", "「今天賣很蠢」當成今日賣出", "獨立分類表、答案檔比對"),
     ("撰寫說明", "writing", "把本股的技術位置、量能、籌碼、基本面整理成書面說明，清掉口語與大盤子句。",
      "不借鄰股數字；前台不出現會員通知", "「作為觀望不碰的標的」這種自稱分類", "逐則讀 print_public_texts 與正式站"),
-    ("規則調整", "tuning", "判錯時找成因、寫通用規則，用保留日與只用規則的重播證明適用未來。",
-     "命中回測只動到目標；raw 重播通過才 apply-rules", "手動補列讓答案過關", "run 編號、commit、模型請求數"),
+    ("規則調整", "tuning", "判錯時找成因，固定來源做成對比較；回歸、未見與人工輔助分開報告。",
+     "核對答案注入與快取，保留來源、預算及失敗紀錄", "人工輔助預覽當獨立品質證明", "run、commit、來源指紋、用量及逐日差異"),
     ("行情與回合", "market", "報價、日 K、持股回合與報酬；進出場取當日高低中點與明講價。",
      "同股同價；收盤後標「收盤」", "「略過 240」改寫成「成功 240」", "check_tracker_midprice 逐回合比對"),
-    ("發布與驗收", "release", "GitHub 推送、Apps Script 推送與建版、擁有者移 /exec、正式站讀回。",
+    ("發布與驗收", "release", "依授權更新受影響的 GitHub、Pages、GAS 原部署與 Worker，正式站讀回。",
      "/exec?action=ping 的 build 與 GitHub 一致", "建了版本就說已上線", "commit、版本號、正式讀回"),
     ("通知與帳本", "automation", "每日總覽 Email／LINE 與盤中通知，依帳本防重寄。",
      "已寄送不重寄；未知結果先核對", "平台接受當成收件者已讀", "Email 與 LINE 各自的帳本"),
@@ -71,6 +72,7 @@ def validate_references() -> list[Path]:
         for link in re.findall(r"\]\((references/[^)#]+)(?:#[^)]*)?\)", text):
             if not (folder / link).is_file():
                 raise ValueError(f"Broken skill reference: {name}/{link}")
+        files.extend(p for p in sorted((folder / "references").glob("*.md")) if p not in files)
     for path in files:
         if not path.is_file():
             raise FileNotFoundError(path)
@@ -104,8 +106,16 @@ def build() -> str:
 
     render_md = mistune.create_markdown(escape=True, plugins=["table"])
 
-    def md(source: str) -> str:
-        return render_md(source).replace('<table>', '<div class="table-wrap" tabindex="0" role="region" aria-label="可左右捲動的規格表"><table>').replace('</table>', '</table></div>')
+    def md(source: str, link_base: str = "") -> str:
+        rendered = render_md(source)
+        if link_base:
+            def relocate(match):
+                target = match.group(1)
+                if target.startswith(("#", "/")) or urlsplit(target).scheme:
+                    return match.group(0)
+                return 'href="' + urljoin(link_base, target) + '"'
+            rendered = re.sub(r'href="([^"]+)"', relocate, rendered)
+        return rendered.replace('<table>', '<div class="table-wrap" tabindex="0" role="region" aria-label="可左右捲動的規格表"><table>').replace('</table>', '</table></div>')
     intro = (BASE / "常用工作規格與指令.md").read_text(encoding="utf-8")
     # Put common work and the copyable request templates in separate expandable cards.
     chunks = re.split(r"(?m)^(?=## \d+\.)", intro)
@@ -127,11 +137,13 @@ def build() -> str:
         state, change = STATUS[name]
         role_cards.append(f'<a class="role k-{key}" href="#{key}"><span>{label}<em class="badge{" new" if state == "新增" else ""}">{state}</em></span>'
                           f'<strong>{title}</strong><small>{name}</small><small class="change">{html.escape(change)}</small></a>')
+        link_base = f"skills/{name}/references/"
+        extra = ''.join(md(p.read_text(encoding="utf-8"), link_base) for p in sorted(path.parent.glob("*.md")) if p != path)
         sections.append(f'<section class="doc" data-group="{key}" id="{key}"><details>'
                         f'<summary><span class="tag k-{key}">{label}</span>{title}</summary>'
                         f'<div class="prose"><p><code>{name}</code> · {state}（{html.escape(change)}） · '
                         f'<a href="skills/{name}/SKILL.md">技能入口</a></p>'
-                        f'{md(path.read_text(encoding="utf-8"))}</div></details></section>')
+                        f'{md(path.read_text(encoding="utf-8"), link_base)}{extra}</div></details></section>')
     filters = '<button type="button" data-filter="all" aria-pressed="true">全部</button>'
     filters += '<button type="button" data-filter="common" aria-pressed="false">共用規格</button>'
     filters += '<button type="button" data-filter="templates" aria-pressed="false">請求範本</button>'
@@ -184,7 +196,7 @@ html[data-theme=dark]{--bg:#101915;--panel:#19251f;--text:#ebf3ee;--muted:#afc1b
 @media(prefers-reduced-motion:no-preference){.flow li,.stage{transition:transform .2s,border-color .2s,background .2s}.stage-card{transition:border-color .3s}}
 @media print{button,.tools,.top-button{display:none!important}main{padding:0}.roles{display:none}.doc details{border:0}.prose{padding:0}body{background:#fff;color:#000}}
 </style></head><body><main>
-<div class="top"><div><div class="brand">盤勢有據 · 工作手冊</div><small>整理日期 2026/10/15 · 可離線閱讀</small></div><button type="button" id="theme" aria-label="切換深淺主題" class="js-only">切換深色</button></div>
+<div class="top"><div><div class="brand">盤勢有據 · 工作手冊</div><small>整理日期 2026/10/19 · 可離線閱讀</small></div><button type="button" id="theme" aria-label="切換深淺主題" class="js-only">切換深色</button></div>
 <header class="hero"><div class="eyebrow">規格 × 技能 × 可複製請求</div><h1>把每次確認的規則，<br>變成下次工作的起點。</h1><p>先選任務角色，再查完整規格。九個技能各管一個問題：協作與授權、介面、分類證據、公開文字、規則調整、行情、自動化、發布驗收、網站助理；同一條規則只寫在一個地方。</p><p>本檔是工作規格索引，不會讀取正式資料、呼叫 AI 或發送通知。</p></header>
 <nav class="roles" aria-label="九種工作角色">@@ROLES@@</nav>
 @@PIPELINE@@
