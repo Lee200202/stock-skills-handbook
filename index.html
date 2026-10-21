@@ -2264,6 +2264,17 @@ document.querySelectorAll('.ss-rise').forEach(el =&gt; io.observe(el));
 <li>2026/10/19實例：舊<code>META_CLAUSE_RE_</code>會把「屬於摺疊手機題材的觀察標的」誤刪，台達電的追蹤子句也會消失，只留下「而非當日已成交」。這是呈現清理造成的資訊損失，不能歸咎模型漏寫。追查<code>Presentationquality.gs</code>與<code>JavaScript.html</code>的<code>publicNarrative_/stripMetaClauses_</code>及Python對應生成片段；移除／取代文體詞表時要跨端同步並驗收既有事實、通道隱私和通知取價，不再用更長例外詞表補洞。未修改或未部署的端點須列未完成，不能只報儲存列正確。</li>
 </ul>
 </div></details></section><section class="doc" data-group="tuning" id="tuning"><details><summary><span class="tag k-tuning">規則</span>規則調整與回測</summary><div class="prose"><p><code>stock-rule-tuning</code> · 併入（補技能路由、離線 A/B、歷史樣本擴充、AI 裁判與答案污染檢查） · <a href="skills/stock-rule-tuning/SKILL.md">技能入口</a></p><h1>規則調整、重播與回測證明</h1>
+<h2>現行解讀：語意、事實與發布邊界（2026/10/21）</h2>
+<p>本文件下方的舊案例保留診斷沿革，不表示現在仍應增加文字詞表或以網站作答案。管理者已要求語氣／文體交 AI 合批審閱；來源、日期、主體、部位與原句仍核對。候選 AI-first 實作必須實測通過才合併，不能將尚未通過的方案描述成正式系統已採用。</p>
+<ul>
+<li><strong>分清四種故障</strong>：候選根本未建立、請求未含該候選、模型未回該 ID、模型有回但證據／語意不合。每批保存預期 ID、實收 ID、缺答、未知 ID、可追查的原始回覆及版本；缺答不算反對或中性。不用增加呼叫掩蓋收件／解析問題。</li>
+<li><strong>用途不是正名</strong>：原文「一支股票叫做＋代號＋錯字名稱」仍可能是在點公司；「出大量紅棒」是量能。盤點／同音比對只提出候選，不能用官方代號存在或近似股價直接確認公司。用途覆核也可能錯，須測它造成的新增誤排。</li>
+<li><strong>部位不是語氣</strong>：初判、覆核、收尾同為持股，不等於三份部位證據；對觀眾說你有獲利、我們來看，不證明講者持有。已確認未全出部位與當日自身分析才依現行發布政策列持股；已出場後現在重新看好，仍可列注意，不自動重開回合。</li>
+<li><strong>等待不是同一件事</strong>：「尚未持有」本身不負面；「目前條件未到所以不進場」是目前進場限制。禁止賣與禁止買分成獨立事實，附本股原句。這些欄位不能用來借用相鄰公司的成交量、成本或資金條件。</li>
+<li><strong>待核要實測最後邊界</strong>：<code>hint_only</code>、<code>needs_review</code>、<code>_repair_gaps</code> 等狀態不保證真的阻止錯列公開。檢查快取、<code>apply_verdicts</code>、補漏、文章與最終公開列；語氣提示未獲可用複核時不得冒稱核定。單檔未定隔離本股，整體裁決程式未執行則不能報品質已通過。</li>
+<li><strong>行情差距只是線索</strong>：歷史成本遠離當日價格可以正確，不用價位距離挑一個較像的數字。已確認跨股／無來源數字仍須修正或隔離，不能因改為待核標記就默許公開。「數字錯了就算了」只出現在第三方貼文，不是管理者授權。</li>
+<li><strong>同檔合作按版本驗收</strong>：保留另一工作階段未提交修改，不重置、不切換其工作樹。每個 run 綁 commit；整合前的成功不能套用到整合後。報告自身修改、他方修改、正式來源修復與未輔助品質時分列。</li>
+</ul>
 <h2>1. 判錯的成因分類（先歸類，再修）</h2>
 <p>管理者 2026/10/14 要求逐一思考「是判定資訊不足、前後文抓取範圍不足、語氣關鍵字有誤，還是判定方式過於嚴苛」。實際遇過的成因如下：</p>
 <div class="table-wrap" tabindex="0" role="region" aria-label="可左右捲動的規格表"><table>
@@ -2321,8 +2332,8 @@ document.querySelectorAll('.ss-rise').forEach(el =&gt; io.observe(el));
 <tr>
   <td>名稱身分</td>
   <td>名字對到另一家真公司</td>
-  <td>華義（模型代號）、宏達電（原文價位 238／239／260 只對得上鴻海）</td>
-  <td>改列公開前用名稱重新比對代號；名稱旁價位只對得上另一檔就改成那一檔</td>
+  <td>華義（模型代號）、宏達電（原文價位 238／239／260，待核鴻海）</td>
+  <td>名稱、代號、原字及上下文共同核對；價格差距只提示疑點，不單憑價格改公司</td>
 </tr>
 <tr>
   <td>一般詞撞名</td>
@@ -2348,7 +2359,7 @@ document.querySelectorAll('.ss-rise').forEach(el =&gt; io.observe(el));
 <ol>
 <li><strong>找原文能確定的依據</strong>，寫成直接歸類（不送問卷）：當日通知、明講今天買賣、紀錄上持有、明講持有（「我的股票…代號股名」）、明講禁令、被問後回答不要、明講可以買。</li>
 <li><strong>修判斷用的句型或範圍</strong>：問句、提問者、大盤主詞、讓步句、轉場、假設句、買進條件（「只能在跌的時候買，漲的時候不要追」是買進條件，不是禁令）。</li>
-<li><strong>修預設值</strong>：沒有證據支持時不公開、或保持流程分類，要看歷史上這個預設造成的對錯；動預設值前先列出受影響的歷史案例並核對正式站人工核定的結果。</li>
+<li><strong>修預設值</strong>：沒有證據支持時不公開、或保持流程分類，要看歷史上這個預設造成的對錯；動預設值前先列出受影響的歷史案例並核對原稿與當時通知／部位及來源判斷。正式站只核對發布結果，不作分類答案。</li>
 <li><strong>最後才動門檻</strong>。管理者 2026/10/08 的規則：跨公開／不公開、改進或改出買入、賣出、會員持股要三票一致；觀望兩類互換兩票；晚補的列三票。放寬只限有理由的窄例外（例：晚補列有兩票以上可用票全部一致、沒有反對票）。</li>
 <li>名稱別名（<code>CONFIRMED_NAMES</code>）屬於管理者確認的名稱表：<strong>加入前先問</strong>（2026/10/15 管理者拒絕在當輪直接加入「成城→勤誠」）。</li>
 </ol>
@@ -2489,7 +2500,7 @@ document.querySelectorAll('.ss-rise').forEach(el =&gt; io.observe(el));
 <ul>
 <li>本機載入流程：設定假的 <code>SPREADSHEET_ID</code>、<code>GEMINI_API_KEY</code> 環境變數，用 <code>importlib</code> 載入 <code>pipeline/pipeline.py</code>，讀保存的原稿（如 <code>scratch/audit1015/original/source-audit-*/source.json</code> 的 <code>raw</code>），直接呼叫 <code>plain_current_stance</code>、<code>_audience_prohibition</code>、<code>preserve_explicit_holdings</code>、<code>verdict_class</code> 等函式。</li>
 <li>裁決測試：用 <code>unittest.mock.patch</code> 替換 <code>_verdict_known</code>、<code>_verdict_cache</code>、<code>call_gemini</code>、<code>budget_left</code>、<code>GEMINI_KEYS</code>，餵固定的問卷答案；原文前後加無關的填充句，避免段落太短。</li>
-<li>每次修正寫 <code>tests/test_regression_MMDD.py</code>；測試資料夾在 .gitignore 裡不進版控，但全套必須通過（10/15 結束時 674 項）。</li>
+<li>新增可交接的回歸契約應放入版控，例如 <code>scripts/test_coverage_contracts.py</code>，以實際測試入口為準。舊 <code>tests/</code> 可能被 .gitignore 排除，不會出現在新工作樹／CI；不能把另一份 checkout 的測試數當成本輪結果。先確認測試檔、相依套件及匯入路徑，缺少舊套件時明列未驗範圍，不為了綠燈重建空測試或宣稱全套通過。</li>
 <li>修改既有測試的期望值前，先確認是不是違反管理者的既有規則（例：10/08「三票一致可移出持股」的測試，曾因新規則過寬而失敗，應收窄規則而不是改測試）。</li>
 </ul>
 <h2>8. 提示詞與同步</h2>
@@ -2514,6 +2525,17 @@ document.querySelectorAll('.ss-rise').forEach(el =&gt; io.observe(el));
 </ol>
 <h2>11. 比較新舊技能與 Prompt</h2>
 <p>量化品質、路由、保留集擴充、AI 裁判及離線／線上 A/B 的完整方法見 <a href="skills/stock-rule-tuning/references/evaluation.md">技能與 Agent 評估</a>。先確認是否注入分類、核對說明或人工裁決快取，分開報告 strict／accepted、獨立／人工輔助、開發／保留集。歷史資料量以完整逐字稿清單盤點，不只使用已有答案檔；模型初標不等於人工答案。數據不足時交付缺口與下一批計畫，不宣稱已證明永久穩定。</p>
+<h2>12. 重複漏收時先分解哪一層失敗</h2>
+<p>同一檔多次未公開，逐份核對，不只看最後的空標籤：</p>
+<ul>
+<li><strong>沒有候選</strong>：名稱盤點／ASR身分／來源範圍是否根本沒有送到。候選提議不能直接變成公開公司。</li>
+<li><strong>沒有可解析回覆</strong>：保留原始回應與預期／收到的ID，區分整批解析失敗、單筆缺欄、截斷及未知ID。完整陣列或可獨立讀取的其他股票，不因單筆損壞全部丟棄。</li>
+<li><strong>語意已回答、來源綁定失敗</strong>：例如已答共同正面立場，卻選到尚未出現公司名的前一片作身分錨點。不要報成模型答中性；可在同批提供逐字可核對的具名片段候選，讓前置共同結論與具名錨點分開選。不得自動搬移引用、補股名、放寬數字或把另一檔的條件接過來。</li>
+<li><strong>同份答案互相矛盾</strong>：例如答公司、具名當下風險，又答沒有本股資訊。重問可附實際檢核失敗原因及原欄位，要求重新讀來源、可保留不確定；不附預期標籤，不直接把矛盾欄改成通過。反覆修正不稱互相獨立投票。</li>
+<li><strong>已判對，發布前又消失</strong>：回查最終名稱／代號、沿用舊列、權限與說明隔離。報出真正阻擋階段，不能一直修改語氣提示詞。當次來源綁定的身分證據與永久別名分開；名錄中存在同音公司不是充分證據。</li>
+</ul>
+<p>持有邊界以當時未出場紀錄或已核對本人的現有部位原句為準；初判／覆核／規則三次同標籤仍不是部位事實。用結構化已驗證事實約束發布，不搜尋生成理由裡的「明講持有」當證明。新股沒有舊紀錄仍可用本日有效本人持有原句，不能因此一律降成注意；反過來也不能將一般正面觀點開成新的會員部位。</p>
+<p>探測未附帳本時，原稿若仍有本人持有句，該項仍可評估；不得在失分後扣掉分母。若參考身分有疑義，另做來源修訂並記版本，不因另一分支稱optional就改成通過。影片畫面、人工修復及來源草稿不回填到宣稱未輔助的模型輸入。</p>
 <h1>技能、Prompt 與 Agent 的量化評估</h1>
 <p>適用：管理者要求優化 skills、比較 Prompt、減少分類不穩定、降低用量，或驗證新設計是否改善操作。先讀本次需要的段落。這份文件規定評估方法，不授權呼叫付費模型、發布雙版本內容、寄送或寫入正式資料。</p>
 <h2>1. 先分清要測的四件事</h2>
