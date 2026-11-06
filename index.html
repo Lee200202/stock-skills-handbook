@@ -1094,6 +1094,22 @@ html[data-theme=dark]{--bg:#101915;--panel:#19251f;--text:#ebf3ee;--muted:#afc1b
 <p>技術流程圖維持滑入循環／點選停止／再播恢復；統計圖以一次入場或資料變更轉場為預設，不循環改動數字或模擬有新資料。兩者都遵守 reduced-motion、離屏／背景暫停及無 JavaScript 可讀。動畫不新增 API 呼叫。</p>
 <p>驗收表逐頁記：viewport、字級／寬度設定、主容器實際邊界、控制項操作、圖表標籤與工具提示、深淺色、狀態、截圖。不得只以 <code>scrollWidth &lt;= innerWidth</code> 宣稱圖中文字可讀；SVG／canvas 的文字與邊界也逐項看。新樣式要在 Pages 與 GAS 受影響介面各驗，無法開啟的一面列未驗。</p>
 <p>若要比較改版成效，將任務完成率、找資料時間、誤觸與可用性列為主指標，參考 <code>stock-rule-tuning/references/evaluation.md</code>；單次截圖或停留時間提高不構成 A/B 因果證據。</p>
+<h2>複核紀錄介面驗收（2026/11/05）</h2>
+<ul>
+<li>後台摘要、差異明細、完整日報及正式網站現況各有來源。時間軸只用已記錄時間；分鐘不補秒，缺值不補零，摘要完成不等於同步或寄送完成。</li>
+<li>比對檔數與差異筆數分母不同；跨日摘要合計標比對筆次。卡片篩選只改畫面，完整區間MD不能跟著少列，下載後解析原始／目前／歷程／完整日報核對。</li>
+<li>常駐日曆鋪滿內容卡；起訖選日接近滿版。實測1440／1916及390、大字、深淺色、短視窗、鍵盤和reduced-motion。</li>
+<li>差異預設收合，卡片／左右對照／單筆均須可編輯、回原文與翻頁；新分頁只帶日期及非機密紀錄ID，不把密鑰放進URL。</li>
+<li>使用自訂控制與SVG線條圖示，不用emoji、keycap或裝飾數字。原始證據文字照存，不為外觀刪改來源。</li>
+<li>取消未儲存內容用頁內自訂確認；存檔進行中不得先關閉並假稱完成。不要用真實股票變更測版；可用同值不寫入與已授權可還原註記測試，另標真正四步同步未測面。</li>
+</ul>
+<p>技術說明按故事線拆章時，章節數由實際內容決定；同步宣告數、目錄、章號、前後導覽、搜尋及舊錨點。使用<code>python -B scripts/check_tech_chapters.py</code>核對結構，實際逐章點選與互動另用瀏覽器驗收，不固定舊的19或20章。</p>
+<h2>15. 全版覆蓋、設定面板與實際介面截圖</h2>
+<ul>
+<li>管理者指定教學、回饋或日曆操作全版時，量測開啟後的覆蓋層是否填滿可見視窗，包含上方分頁和底部。背景停止捲動，內層長內容可捲動，關閉鈕保持可達。檢查 Escape、鍵盤操作、關閉後焦點，以及從教學切換到回饋時只開一層。</li>
+<li>齒輪設定面板沿用靠右彈層，桌面以約四分之一視窗為寬度基準，並保留字級選項所需的最小寬度。手機限制在視窗內。在 100%、125%、150% 與寬字距下，選項中的中文與百分比仍排同一行，不截斷。驗收面板位於黏頂頁籤上方，實點面板上緣與最下方入口，不能只看 z-index。</li>
+<li>設定提示只寫使用者需要知道的內容。上列圖示保留可存取名稱。郵件教學要從已驗收的真實介面截圖，保留定位所需的周邊，紅框圈在實際圖示與入口上。逐步截取齒輪、捲到設定底部、新手教學所有情境。截圖不得把圖示改成文字按鈕或省略實際同層選項。兩封草稿各確認圖片載入、窄版無橫向溢出及連結目的地。</li>
+</ul>
 </div></details></section><section class="doc" data-group="story" id="story"><details><summary><span class="tag k-story">視覺</span>捲動敘事視覺語言</summary><div class="prose"><p><code>stock-scroll-story</code> · 新增（zenbu 與 Apple 產品頁實測：權杖、進場淡入、數字跳動、卡片列與暫停） · <a href="skills/stock-scroll-story/SKILL.md">技能入口</a></p><h1>捲動敘事設計規格</h1>
 <p>2026/10/21 以瀏覽器實際操作兩個參考網站後整理。數值是當天以 <code>getComputedStyle</code> 讀出的實測值，網站之後可能改版；需要精確行為時重新檢查。參考的是結構與節奏，不是素材。</p>
 <h2>1. 參考網站實測</h2>
@@ -1552,7 +1568,7 @@ document.querySelectorAll('.ss-rise').forEach(el =&gt; io.observe(el));
 </table></div>
 <p>「會員執行指令」是產品的操作紀錄，不宣稱取得券商成交回報。不要把所有帶價條件指令降成觀望；也不要把「如果想買的人，甲股可以買」提升成成交。必須帶完整通知原文進同一語意核對入口。</p>
 <p>部位與新進場立場分開：部分減碼可同時保留剩餘持股及暫不買回；全數出場才關閉整回合。同一新進場語境不可重複列注意和不碰。張數未知，不猜一半部位、不推算部分已實現績效。</p>
-<p>持股／注意可作管理者允許的同組內容驗收；不得因此改動交易台帳、成本、回合或把所有看好都叫持有。紀錄持有的判斷可包括近期持股列且之後無全出；現行回看天數須查程式（10/14 曾採 15 天），不是永不失效的永久部位。</p>
+<p>2026/10/21 管理者最新政策：截至目標日已核對仍持有，且今天有本股分析的注意列，正式寫入會員持股；未持有或部位未知的正面觀點仍列觀望注意。不得用本次分類衍生的回合反證持有，不把後來部位倒填，不新增成交、成本或回合。早期持股／注意同組 accepted 僅保留為歷史評估政策，不取代這項發布規則。紀錄持有的判斷可包括近期持股列且之後無全出；現行回看天數須查程式（10/14 曾採 15 天），不是永不失效的永久部位。</p>
 <h2>3. 語氣、主體與日期的正反例</h2>
 <ul>
 <li>「今天賣甲跟賣乙一樣蠢」：是在反對殺低；只有「今天＋賣＋股名」字面不足。</li>
@@ -1599,7 +1615,7 @@ document.querySelectorAll('.ss-rise').forEach(el =&gt; io.observe(el));
 <p>正式更新前備份指定表／日期到獨立私人備份檔，保留人工列及來源優先去重；更新時讀回 raw 指紋與關鍵解析狀態，避免另一輪已換稿仍覆寫。只修說明時優先用來源綁定的局部說明更新，不重新擷取整天。Email／LINE 帳本、已寄送旗標與已寄出快照維持。</p>
 <p>候選工具：<code>scripts/regenerate_verified_day.py</code>（preview／apply 先查參數）、<code>apply_reviewed_notes.py</code>、<code>repair_notice_semantics.py</code>、<code>repair_reading_copy.py</code>、<code>sync_quality.py</code>；變更前讀副作用。測試含正反例、未來日期不滲漏、部分部位、否定主體、跨股數字、資料不足及後段再次改類。</p>
 <p>交付逐檔差異／理由、本股引句、書面文字、分類數與獨立股票數、漏收／錯收、稽核未定、規則版本、真實重播與最後提交對應、正式讀回及寄送帳本是否變化。不只報「人工答案全過」而隱藏 raw 模式失敗或說明缺證據。</p>
-<h2>10. 管理者逐次的分類裁示（10/05–10/15）</h2>
+<h2>10. 管理者逐次的分類裁示（10/05–10/21）</h2>
 <p>依時間列出，後面的覆蓋前面的。股名是當時的案例；規則以句型判斷。</p>
 <div class="table-wrap" tabindex="0" role="region" aria-label="可左右捲動的規格表"><table>
 <thead>
@@ -1797,6 +1813,48 @@ document.querySelectorAll('.ss-rise').forEach(el =&gt; io.observe(el));
   <td>要求把過去已稽核正確的族群段落併入資料庫，方便快速判斷</td>
   <td>撰寫本手冊時程式只有「個股產業」表（代號→產業）；已核對族群段落的資料庫尚未看到實作，動手前先查最新程式與另一工作階段的進度</td>
 </tr>
+<tr>
+  <td>10/21</td>
+  <td>聯電</td>
+  <td>「我沒有聯電…130以下不要再賣…它會漲回來，跟230幾的鴻海一模一樣」</td>
+  <td>否認部位只改部位軸；有本股當下正面條件仍可注意。v21候選嘗試將觀望票與部位票分軸，但尚未合併正式流程，不能把文件標準當成模型已驗證</td>
+</tr>
+<tr>
+  <td>10/21</td>
+  <td>群聯、宜鼎</td>
+  <td>「記憶體不要再賣了…這兩支股票都來年線了…群聯，還有一支…宜鼎」</td>
+  <td>結論在股名之前、用「這兩支」指向後面的名稱：結論同屬兩檔；問卷的可引用範圍要含這段前文，否則票會被判成引不出原文</td>
+</tr>
+<tr>
+  <td>10/21</td>
+  <td>台郡、富喬、台玻</td>
+  <td>「昨天所有人都在分析的股，台郡跌，富橋跌，台玻跌…追逐當日強勢股隔天會比別人弱」</td>
+  <td>共用當下風險要逐檔保留，不能因排列順序遺失；只有共同點名仍不足。個別另有不同條件時分開判斷，不強制整組同類。v21整組處理仍屬未合併候選；當日網站由來源修正計畫更新</td>
+</tr>
+<tr>
+  <td>10/21</td>
+  <td>鴻海</td>
+  <td>已出場，今天重申「240以下都是買點」並用來比喻聯電</td>
+  <td>已出場股票有本日重申的買點：觀望注意，不當回顧</td>
+</tr>
+<tr>
+  <td>10/21</td>
+  <td>嘉澤</td>
+  <td>「1580買嘉澤，我賣掉一半…1835我又沒有賣」</td>
+  <td>回顧往日減碼與今天的剩餘部位分開寫；說明不能自行宣告紀錄上沒有的今日賣出（<code>strip_unrecorded_sale_claims</code>）</td>
+</tr>
+<tr>
+  <td>10/21</td>
+  <td>旭隼（「旭準」／手動稿「序」）</td>
+  <td>自動稿可辨識、手動稿只剩「序」</td>
+  <td>流程實際讀的那份原稿辨認不出身分就不補列；說明補空不得用前一檔的「賺100」</td>
+</tr>
+<tr>
+  <td>10/21</td>
+  <td>亞德客-KY</td>
+  <td>當日會員通知要新進會員於指定價位以下買進；已有 10/08 起的部位</td>
+  <td>依產品契約記當日買入，不另開回合；逐字稿「我買在這邊」是既有部位，不是今日成交</td>
+</tr>
 </tbody>
 </table></div>
 <h2>11. 逐字稿聽錯的樣態（名稱身分）</h2>
@@ -1866,7 +1924,7 @@ document.querySelectorAll('.ss-rise').forEach(el =&gt; io.observe(el));
 </tbody>
 </table></div>
 <p>查「當時持有」只能用截至目標時點的可靠紀錄。後來的買進／出場不可倒填成目標日事實；目標日文章或錯列衍生的持股回合不能反過來證明該錯列正確。資料缺失記 <code>unknown</code>，不冒認已持有或已清倉。</p>
-<p>當前管理者定義與已確認的新裁示優先；13 天的早期答案若與新版政策不同，保留原標註版本，重新複核後另記新版結果，不能為了全過靜默改答案。持股／注意同組的 accepted 驗收政策保留；它不允許虛構部位或交易。</p>
+<p>當前管理者定義與已確認的新裁示優先；13 天的早期答案若與新版政策不同，保留原標註版本，重新複核後另記新版結果，不能為了全過靜默改答案。早期持股／注意同組的 accepted 驗收政策按原版本保留；2026/10/21 起已核對未全出部位、當天另有本股分析的注意列，發布應列會員持股。部位未知或未持有仍列注意；不能為新版全過而靜默改舊答案。</p>
 <h2>2. 自行分類的兩個工作選項</h2>
 <div class="table-wrap" tabindex="0" role="region" aria-label="可左右捲動的規格表"><table>
 <thead>
@@ -1985,12 +2043,12 @@ document.querySelectorAll('.ss-rise').forEach(el =&gt; io.observe(el));
 </tr>
 <tr>
   <td>觀望注意 <code>watch_watch</code></td>
-  <td>有本股現在向前正面看法、可辨認買點或等待條件，且未明講目前不能買</td>
+  <td>有本股現在的正面技術訊號、已成立買點或當下可執行低接範圍，且沒有仍待成立的進場條件</td>
   <td>純漲跌、點名、通用教學、只說沒有持有、別股的買點不足以收錄</td>
 </tr>
 <tr>
   <td>觀望不碰 <code>watch_avoid</code></td>
-  <td>本股現在禁買、不參與、尚未符合條件或不急買回，或原文明確現在風險</td>
+  <td>本股現在禁買、不參與、仍需等待／未回穩／尚未符合進場條件或不急買回，或原文明確現在風險</td>
   <td>不准賣不是不准買；既往虧損不是當下禁令；只因曾賣出不能自動列不碰</td>
 </tr>
 <tr>
@@ -2002,9 +2060,9 @@ document.querySelectorAll('.ss-rise').forEach(el =&gt; io.observe(el));
 </table></div>
 <p>最容易混淆的分界：</p>
 <ul>
-<li><strong>等待買點 vs 尚不能買</strong>：只給可執行買點或正面等待條件可列注意；同段明講「目前還不行、條件未到、不急買回」則目前是不碰。未來可能變好不覆蓋目前禁令。</li>
+<li><strong>觀望注意 vs 觀望不碰</strong>（2026/11/03 管理者問卷，取代 11/02「等待即不碰」）：看講者對本股本身的態度。本股看法正面——之後要買、給買點價位、技術轉好（背離）、看好、指標股、叫持有者別殺低——就算接著說「等回穩、等大環境」也是注意；「大環境還沒穩」適用所有股票，不是本股禁令，講者說「我還不碰」而理由只有大環境仍是注意。本股自己被否定才是不碰：明講不碰／不買／剔除、被問能不能買答「還沒有」或本股還沒轉強而無正面看法、預期還會跌、本股自身風險（缺口、套牢、斷頭）。只當追高反面教材而無本股看法不列。14 題原句與勾選見 <code>docs/daily-review/觀望注意邊界問卷.md</code>。</li>
 <li><strong>歷史交易 vs 現況</strong>：先剝離過去的買賣事件，再判斷是否另有本股今日觀點；歷史不固定偏多或偏空，也不新增今天的交易。</li>
-<li><strong>持有 vs 注意</strong>：accepted 可以同組通過；若說明聲稱實際持有，仍須有部位依據。選注意不代表賣光；選持股不代表今天買入。</li>
+<li><strong>持有 vs 注意</strong>：按最新發布政策，有截至當時的可靠未全出部位且今天有本股分析，列會員持股；沒有可靠部位只按正面看法列注意。早期同組 accepted 分數需標舊政策，不得混成新版已精確歸類。選持股不代表今天買入。</li>
 <li><strong>部分出場 vs 全數出場</strong>：同日可有賣出事件與剩餘持股；餘部續抱和已賣部位暫不買回分軸寫，不構成互相矛盾。張數未知就保留未知。</li>
 <li><strong>來源優先 vs 錯誤解析</strong>：經核對的當日操作來源優先，AI 解析標籤不具有覆蓋原句的權力。買／賣候選附完整原文合批覆核，不逐檔加呼叫；模型票不能代替證據。</li>
 <li><strong>文體 vs 分類</strong>：錯字或口語交既有 AI 批次審閱；不能用文體字串命中搬動分類。原句、主體、日期、數字、部位及通道核對仍保留。</li>
@@ -2227,6 +2285,20 @@ document.querySelectorAll('.ss-rise').forEach(el =&gt; io.observe(el));
 <li>每章約 2–3 點（管理者 2026/10/07：只列一點偏少；看過逐字稿有內容就補上）。實際下限與上限以現行 <code>canonical_article</code> 與文章核對程式為準，不恢復舊版 6–10 點。</li>
 <li>每點要有原文支持；同章與跨章去重：意思相近（只換開頭、沒有新數字或新條件）只留一點，換另一個有內容的重點（2026/10/07 ①有兩點語意相近）。</li>
 <li>寫成書面重點，不貼長段原話；教學重點要寫出操作邏輯（例如「突破季線後回測季線再上去才是買點」），不是只寫「講解了季線」。</li>
+<li>2026/11/06 管理者：兩章也要每天審、每週回歸，<strong>要有一定的內容與詳細的技術說明</strong>，不可有幻覺。審核標準（每日作業 <code>docs/daily-review/每日複核作業.md</code> 第 4-1 節是同一份）：<ul>
+<li>①盤勢依序檢查有沒有漏：指數漲跌與關鍵點位、位階與均線（年線、季線、60分K）、量能、法人或融資籌碼、族群資金輪動、匯率與重大事件、下一步多空看法。只寫原稿有講的維度。</li>
+<li>③教學每點寫成「觀念標題：做法 → 明講的原因 → 適用對象與條件 → 當天例子 → 要避免的錯誤」，約 120～220 字；材料只有一句時可以短。</li>
+<li>每個數字都要在該點自己的引句裡；講者的說法用「講者指出／認為」，不把講者對事實的說法改寫成更確定的事實（11/06 國巨「一張不是1,000股」改寫成「一拆四後換算回拆分前」）。</li>
+<li>私人理財分享（換匯、買房）可以寫，但要寫明是講者個人的做法、沒有鼓勵觀眾。</li>
+<li>11/06 實例：原本兩章各 3 點，都有依據，但漏了年線位階、1.11兆底部出量、族群全面下跌、台幣匯率，教學每點只有 74～95 字。改成各 6 點後的寫法見 <code>scripts/repairs/2026-11-06-points-review.json</code>。</li>
+</ul>
+</li>
+<li>工具：<ul>
+<li><code>scripts/daily_review/chapters.py</code>：拆兩章、列機械疑點、<code>check-plan</code> 驗章節修正計畫。</li>
+<li>章節修正一律走 <code>scripts/apply_reviewed_points.py</code>（整份取代兩章）。</li>
+<li>重播回歸用答案檔的 <code>chapter_min</code>、<code>chapter_required</code>、<code>chapter_must_not</code>（見 <code>stock-rule-tuning</code> 第 4 節）。</li>
+</ul>
+</li>
 </ul>
 <h2>6. 每集標題</h2>
 <ul>
@@ -2478,21 +2550,33 @@ document.querySelectorAll('.ss-rise').forEach(el =&gt; io.observe(el));
   <td><code>equivalence</code>、<code>why</code>、<code>review_basis</code></td>
   <td>管理者裁示與判斷依據的文字紀錄</td>
 </tr>
+<tr>
+  <td><code>chapter_min</code></td>
+  <td>①盤勢（<code>macro</code>）與③教學（<code>lessons</code>）各至少幾點（2026/11/06）</td>
+</tr>
+<tr>
+  <td><code>chapter_required</code></td>
+  <td><code>[{chapter, topic, any_of}]</code>：該章至少一點含 <code>any_of</code> 其中一個詞；用原稿的數字或專有名詞，不用語氣詞</td>
+</tr>
+<tr>
+  <td><code>chapter_must_not</code></td>
+  <td><code>[{chapter, phrase}]</code>：該章不得出現的已確認錯誤說法</td>
+</tr>
 </tbody>
 </table></div>
 <p>建立方式：完整讀當天保存的原稿與通知，<strong>先自己獨立分類</strong>（公司、主體、日期、部位、現況立場、原句），再看正式站與流程結果；只把有明確依據或管理者裁示的列入。可接受兩種結果的股票（教學回顧或不碰）留在 must 之外。</p>
 <h2>5. 保留日回測（新規則上線前必做）</h2>
 <ul>
 <li><strong>命中回測</strong>：把新句型套到所有有答案檔的日期（9/29 起）原稿，列出每一個命中的股票與其答案分類；命中答案不符的就是誤判，先修規則。實例：「你們不要追」的禁令在 10/02 台達電「只能在跌的時候買，漲的時候你就不要追」誤中，加「本股到禁令之間有買進條件就不算」後只剩目標案例；同一條件若檢查整句，又會被前一個話題的「跌的時候有錢買」擋住目標案例，所以範圍限定在本股名稱到禁令之間。</li>
-<li><strong>價位與名稱規則</strong>：用證交所 <code>STOCK_DAY_ALL</code> 與櫃買 <code>tpex_mainboard_daily_close_quotes</code> 的高低價對其他日期試跑，確認只改目標案例（宏達電→鴻海），其他日期只記錄不改。</li>
+<li><strong>價位與名稱線索</strong>：官方行情只供查核定位；近期價差不能證明逐字稿主體錯誤。回到完整原稿、轉場與公司行動，交語意審閱確認；不以價格帶自動換股或刪句，案例與通用回歸均保留前後證據。</li>
 <li><strong>文字規則</strong>：對全部已發布說明回測（見 <code>stock-public-writing</code> 第 9 節）。</li>
-<li><strong>預設值改動</strong>：列出歷史上同樣票型的案例，查正式站人工核定的結果是否一致（例：10/02 聯電、10/06 長榮正式站都不列，與「沒有一票支持就不公開」一致）。</li>
+<li><strong>預設值改動</strong>：列出歷史同票型案例，用原稿、當時通知／部位獨立核對；正式站只供確認發布現值。缺答是未完成，不推論成沒有立場；明確 about_itself=false 才是有效 ignored 票。</li>
 <li>沒有答案檔的日期，先完整原稿及當時通知／部位獨立判定並保存，再比工作流；正式站API只核對發布結果及現值，不能充當分類答案。標註來源審核草稿與未定候選，不能宣稱通過金標。</li>
 </ul>
 <h2>6. 變異量測與停止重跑</h2>
 <ul>
 <li>同一份原稿模型每次判讀都可能不同。把當天所有 run 的「最終分類」整理成「股票 × run」表，看哪幾檔在不同 run 落在不同類；穩定的不用動，變動的逐檔追是哪一步造成。</li>
-<li>同一天連續重跑三次仍出現新的錯誤，停止重跑，改成結構化依據：直接歸類規則、紀錄依據、裁決快取、已核對說明綁定；不要期待模型自己收斂。</li>
+<li>同一天連續重跑三次仍有新錯誤，停止相同條件重跑，定位輸入遺漏、主體、時間軸、問卷欄位及證據結構。修通用流程後再實測，不加關鍵字方向捷徑、不灌人工分類或說明，發布僅使用已成功的同次候選。</li>
 <li>裁決快取（「分類裁決」表）以段落指紋＋<code>VERDICT_VERSION</code> 為鍵。規則或可引用範圍改了就升版號；注意沿用的「待確認」不能被當成「不動」。</li>
 <li>失敗的 apply 不會寫入正式資料，正式站保持上一個通過的版本；回報時寫清楚哪一版在線上。</li>
 </ul>
@@ -2830,6 +2914,7 @@ document.querySelectorAll('.ss-rise').forEach(el =&gt; io.observe(el));
 </ul>
 <p>明講價需核對原句、日期、公司、成交／條件語意及現行合理區間檢查；不是把 EPS、過去目標或無法執行的數字送進 min/max。手動成本覆寫保留來源、單列比較，不算系統公式錯誤。若產品規則已改先實查，不能靜默恢復「進場最低／出場最高」或「明講一律優先」。</p>
 <p>逐回合核對進出日、OHLC 來源、明講價／有效性、覆寫、預期與實際取價、報酬和容差，列不符原因。頁面問號可呈現同一公式與數字例（標示示意），避免 UI 寫中點而後端其實用極值。</p>
+<p>2026/10/29 持股追蹤新增顯示選項：預設「中點計算」完整沿用上述公式與成本覆寫；「低進高出」僅以各回合既存取價交易日的最低進場、最高出場作假設試算，持有中仍用有效現價。切換同步更新排序、個股與回合報酬、連乘累積及摘要；已實現平均包含目前持有股票先前結束的回合。缺有效高低價不改用中點或零價、不列入試算平均。只在讀取層回傳公開行情範圍、前台複本計算，不改帳本、成本、回合或正式績效。</p>
 <p>部分賣出保留剩餘已存在部位；全數出場才關整個回合，後續重新買入才新開回合。不猜張數、分批權重或部分已實現收益。觀望不碰不自動作廢仍持有的另一維度；純觀望不能建倉。</p>
 <p>聲明日與市場交易日分清，缺當日日 K 按當前允許規則往之前找，不用後日補過去。逾期出場／三日確認等既有產品條件先讀 <code>explainHoldingsTracker</code> 與實作，不從歷史筆記重建另一套算法。盤中預覽 K 不寫成已定案績效。</p>
 <h2>5. 統計、圖表與策略限制</h2>
@@ -3041,7 +3126,7 @@ document.querySelectorAll('.ss-rise').forEach(el =&gt; io.observe(el));
 <h2>7. 效能與交付</h2>
 <p>列請求 wall time、後端各段、冷／熱快取、資料日期、同時段工作、失敗數。少量同路徑重測改善前後；單次 0.4 秒不代表全部請求都達標。使用者要 15 秒內完整資訊時定義完成條件（幾檔有效價格、哪些可無成交），保留冷讀超標樣本，別用顯示骨架時間當完整資料時間。</p>
 <p>最終列正常／未到時窗／等待續跑／需處理／證據不足，附 run、原因、修復、讀回、Email／LINE 各帳本及背景工作。已啟用自動化不代表下一交易日已完成端到端驗收。</p>
-<h2>8. 已發生過的事故與處理（10/05–10/15）</h2>
+<h2>8. 已發生過的事故與處理（10/05–10/21）</h2>
 <div class="table-wrap" tabindex="0" role="region" aria-label="可左右捲動的規格表"><table>
 <thead>
 <tr>
@@ -3118,6 +3203,12 @@ document.querySelectorAll('.ss-rise').forEach(el =&gt; io.observe(el));
   <td>檢查範圍太大</td>
   <td>收斂到原文與解析結果</td>
 </tr>
+<tr>
+  <td>10/21</td>
+  <td>下午重跑後當日分類大幅倒退（瑞鼎、旭隼、聯電、群聯、宜鼎、鴻海漏列）</td>
+  <td>後台投稿的手動原稿（逐字以空白分隔、幾乎沒有標點、股名多處聽錯：紅海、連電、立基電、移頂、瑞頂、雅德克、蹲態，富喬只剩「台郡橋跌」）依「手動優先」取代了品質較好的自動稿</td>
+  <td>用來源核對計畫修正當日（模型0、寄送0）；取稿時兩份原稿並存要比較辨識品質並在日誌警示，選哪一份是管理者的決定</td>
+</tr>
 </tbody>
 </table></div>
 <p>GitHub 自己的 <code>schedule</code> 事件對這個 repo 常晚幾個小時（10/02：UTC 03:xx 的排程在 09–13 UTC 才觸發）；準時的 11:09 執行是 <code>workflow_dispatch</code>。判斷「今天沒跑」前先看是不是排程延遲。</p>
@@ -3128,6 +3219,9 @@ document.querySelectorAll('.ss-rise').forEach(el =&gt; io.observe(el));
 <li>觸發與取消屬於對外動作：10/05 的同意是針對那次事故；單日 <code>apply</code> 要管理者在對話中點名日期（見 <code>stock-collaboration</code> 第 2 節）。</li>
 <li>讀模型額度：管理者會貼 AI Studio 的 RPM／TPM／RPD；送出前估算請求數（<code>stock-rule-tuning</code> 第 9 節）。</li>
 </ul>
+<h2>UI發布後的自動化健康核對（2026/11/05）</h2>
+<p>先記台北日期與時間窗。未到09:05通知、11:05取稿、12:00最早寄送時，不把等待當故障。查當日觸發器心跳及必要觸發器，再讀最近已完成交易日的原稿、工單、郵件接受帳本、同步與績效時序；GitHub成功但未呼叫模型的略過輪不是完整流程驗收。</p>
+<p>同時看累計觸發器耗時與參考預算：目前綠燈不抵銷前一日超過參考值。先列實際來源與耗時再判定是否需優化，不為健康巡檢重裝、派工或重寄。郵件服務接受不等於收件者已讀，休市／未開盤保留報價不等於來源漏抓。</p>
 </div></details></section><section class="doc" data-group="release" id="release"><details><summary><span class="tag k-release">發布</span>同步發布與驗收</summary><div class="prose"><p><code>stock-release-check</code> · 併入（補品質提升的證據門檻，區分已安裝、已評估與已發布） · <a href="skills/stock-release-check/SKILL.md">技能入口</a></p><h1>發布、版本同步與實測交付</h1>
 <h2>1. 權威與範圍</h2>
 <p>工作前讀 cwd／<code>git status --short</code>／remote／branch／目前 build；找適用的 <code>AGENTS.md</code>，不存在就不虛構。源碼以目前 Git 追蹤、symlink 及構建腳本確認。<code>public-site/gas-source/</code> 是現行正本；<code>apps-script/</code> 可能連到它，不可只改未追蹤鏡像。其他工作階段的 dirty files 不加入本輪 commit。</p>
@@ -3167,6 +3261,7 @@ document.querySelectorAll('.ss-rise').forEach(el =&gt; io.observe(el));
 </table></div>
 <p>目前常用入口（重新讀設定核實，非永久保證）：倉庫 <code>Lee200202/Stock</code>；Pages <code>https://lee200202.github.io/Stock/</code>；GAS project <code>1eTCOyRy7G9YoG_UaO_LTPgesYmhPjpjzT4ItmXjyE71Q4JrARliIjYIE</code>；原 deployment <code>AKfycbyLQjAd-CnQ6D6_JP3OY1WwXDkafCJthzeP3G4FDkT4t26PY9Gx1rhrXJjiHVZExQhoaw</code>。從 <code>.clasp.json</code>、設定與原部署交叉核對；不得因 deploy 權限問題另建網址。</p>
 <h2>2. 本機關卡與來源同步</h2>
+<p>修改Config的GAS_BUILD或畫面版本標記時，同步Setup的PROJECT_BUILD及PROJECT_HTML；新增共用include也納入檢查。發布前執行 <code>node scripts/check_project_manifest.cjs</code>，核對真實HTML標記及版本一致，避免新版被舊檢查表誤報。標記優先採穩定元件識別，不依賴可翻譯的英文註解。</p>
 <p>按 diff 選相關測試、數值與畫面，再擴測解決具體風險；不把固定歷史測試總數當門檻。新增回歸失敗需處理，舊失敗也要指出影響，不能只說「本來就有」全部略過。</p>
 <p>常用 <code>scripts/check_original_parity.py</code>、<code>scripts/build_original_site.py</code>；內容、行情、UI 各腳本讀目前參數後執行。<code>sync_quality.py</code> 只同步指定 Prompt／共用片段，不能代表全部 Python 與 GAS 等效。</p>
 <p>建議來源核對：Git 追蹤清單 → GAS 對應檔（<code>.gs</code>／<code>.js</code>、大小寫、CRLF 正規化）→ cloud HEAD 差異 → 本次選定新增／修改檔。雲端多出的 Editor／Review 等檔不能自動刪；意外漂移先解讀合併，不能整包舊來源覆蓋。</p>
@@ -3342,6 +3437,9 @@ document.querySelectorAll('.ss-rise').forEach(el =&gt; io.observe(el));
 <li>除 HTML／CSS／JS 外，比對放大視窗的 SVG 與公開截圖資產。Pages 資產發布成功後，再驗圖解視窗與圖片的實際載入；<code>HTTP 200</code> 或部署版本正確不能代替圖片完整呈現。</li>
 <li>章節驗收以實際 <code>innerWidth</code>、字級與深淺色紀錄，不能只記工具要求的尺寸。瀏覽器尺寸覆寫可能只作用在當前分頁；量到另一個寬度時先修正測試分頁，不把它算進目標矩陣。</li>
 </ul>
+<h2>紀錄與說明同步驗收（2026/11/05）</h2>
+<p>每日摘要的完成、寄送快照、修改紀錄、正式網站及通知帳本分列證據。技術頁引用舊日實驗須標日期，不把已解缺陷寫成現行限制，也不把離線通過改寫成模型已穩定。版本沿革按已知日期分組由早到新，無日期的舊項目另列，不從版本號猜日期。</p>
+<p>複核後台新增include時確認Pages及GAS都實際載入；卡片、對照、單筆、新分頁及MD區間匯出用真實資料讀回。原部署由擁有者更新後，核對實際部署版本與來源，不能只信build文字。正式資料同值儲存可驗無寫入；不能據此宣稱改寫後同步已實測。</p>
 </div></details></section><section class="doc" data-group="assistant" id="assistant"><details><summary><span class="tag k-assistant">助理</span>網站 AI 助理</summary><div class="prose"><p><code>stock-assistant</code> · 新增（只用 Flash Lite、只訂閱每日總覽、唯讀查詢與三條硬限制） · <a href="skills/stock-assistant/SKILL.md">技能入口</a></p><h1>助理規格與驗證</h1>
 <p>程式位置：後端 <code>public-site/gas-source/Aiservice.gs</code>（編輯器檔名 <code>Aiservice</code>），前台對話框在 <code>Index.html</code> 與 <code>JavaScript.html</code> 的「助手」段（<code>askHints</code>、<code>askInput</code>、<code>KEY_STORE = 'gemini_key'</code>）。函式名稱以 <code>rg -n &quot;function 名稱&quot; public-site/gas-source/Aiservice.gs</code> 確認，不憑記憶。</p>
 <h2>1. 管理者的裁示（2026/10/12）</h2>
@@ -3668,6 +3766,12 @@ document.querySelectorAll('.ss-rise').forEach(el =&gt; io.observe(el));
   <td>固定來源、模型、Prompt及部位快照；區分調規則／未見／人工輔助，同版重複及失敗均保留</td>
   <td>引句存在不等於屬於本股；只關裁決快取不代表沒有舊說明影響；一次通過不證明零錯誤</td>
   <td>rule-tuning</td>
+</tr>
+<tr>
+  <td>A06「先實際跑模型，不能直接填答案更新」</td>
+  <td>正常更新先保存真實模型候選，推論後才比參考；成功後原封套用同一artifact，核對程式／來源／政策／快照</td>
+  <td>答案灌裁決、按答案刪句、寫入後重問模型，均不能算未輔助驗收；來源修復另列，不作一般發布捷徑</td>
+  <td>rule-tuning、release-check</td>
 </tr>
 </tbody>
 </table></div>
