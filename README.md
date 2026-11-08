@@ -8,7 +8,7 @@
 
 - `index.html`：自足的互動手冊，支援手機、深淺色、鍵盤及減少動態；沒有 JavaScript 仍可閱讀。
 - `常用工作規格與指令.md`：角色、共用規格、請求範本和常見錯誤。
-- `skills/`：九個 Stock skills 的入口與詳細參考文件（2026/10/15 新增 `stock-public-writing`、`stock-rule-tuning`、`stock-assistant`、`stock-collaboration`，其餘五個併入新規則）。
+- `skills/`：十一個 Stock skills 的入口與詳細參考文件（2026/10/15 新增 `stock-public-writing`、`stock-rule-tuning`、`stock-assistant`、`stock-collaboration`，其餘五個併入新規則；10/21 新增 `stock-scroll-story`；11/08 新增 `stock-cloud-sync`）。
 - `驗收紀錄.md`：手冊建立當時的本機驗收範圍。
 - `scripts/build_stock_skill_handbook.py`：由 Markdown 重建 HTML。
 
